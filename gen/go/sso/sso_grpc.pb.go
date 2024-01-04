@@ -19,9 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Auth_Register_FullMethodName = "/auth.Auth/Register"
-	Auth_Login_FullMethodName    = "/auth.Auth/Login"
-	Auth_IsAdmin_FullMethodName  = "/auth.Auth/IsAdmin"
+	Auth_Register_FullMethodName    = "/auth.Auth/Register"
+	Auth_Login_FullMethodName       = "/auth.Auth/Login"
+	Auth_IsAdmin_FullMethodName     = "/auth.Auth/IsAdmin"
+	Auth_SaveAdmin_FullMethodName   = "/auth.Auth/SaveAdmin"
+	Auth_RemoveAdmin_FullMethodName = "/auth.Auth/RemoveAdmin"
 )
 
 // AuthClient is the client API for Auth service.
@@ -31,6 +33,8 @@ type AuthClient interface {
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...grpc.CallOption) (*IsAdminResponse, error)
+	SaveAdmin(ctx context.Context, in *SaveAdminRequest, opts ...grpc.CallOption) (*SaveAdminResponse, error)
+	RemoveAdmin(ctx context.Context, in *RemoveAdminRequest, opts ...grpc.CallOption) (*RemoveAdminResponse, error)
 }
 
 type authClient struct {
@@ -68,6 +72,24 @@ func (c *authClient) IsAdmin(ctx context.Context, in *IsAdminRequest, opts ...gr
 	return out, nil
 }
 
+func (c *authClient) SaveAdmin(ctx context.Context, in *SaveAdminRequest, opts ...grpc.CallOption) (*SaveAdminResponse, error) {
+	out := new(SaveAdminResponse)
+	err := c.cc.Invoke(ctx, Auth_SaveAdmin_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) RemoveAdmin(ctx context.Context, in *RemoveAdminRequest, opts ...grpc.CallOption) (*RemoveAdminResponse, error) {
+	out := new(RemoveAdminResponse)
+	err := c.cc.Invoke(ctx, Auth_RemoveAdmin_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
@@ -75,6 +97,8 @@ type AuthServer interface {
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error)
+	SaveAdmin(context.Context, *SaveAdminRequest) (*SaveAdminResponse, error)
+	RemoveAdmin(context.Context, *RemoveAdminRequest) (*RemoveAdminResponse, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -90,6 +114,12 @@ func (UnimplementedAuthServer) Login(context.Context, *LoginRequest) (*LoginResp
 }
 func (UnimplementedAuthServer) IsAdmin(context.Context, *IsAdminRequest) (*IsAdminResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsAdmin not implemented")
+}
+func (UnimplementedAuthServer) SaveAdmin(context.Context, *SaveAdminRequest) (*SaveAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SaveAdmin not implemented")
+}
+func (UnimplementedAuthServer) RemoveAdmin(context.Context, *RemoveAdminRequest) (*RemoveAdminResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveAdmin not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -158,6 +188,42 @@ func _Auth_IsAdmin_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_SaveAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SaveAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).SaveAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_SaveAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).SaveAdmin(ctx, req.(*SaveAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_RemoveAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveAdminRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).RemoveAdmin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Auth_RemoveAdmin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).RemoveAdmin(ctx, req.(*RemoveAdminRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +242,14 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IsAdmin",
 			Handler:    _Auth_IsAdmin_Handler,
+		},
+		{
+			MethodName: "SaveAdmin",
+			Handler:    _Auth_SaveAdmin_Handler,
+		},
+		{
+			MethodName: "RemoveAdmin",
+			Handler:    _Auth_RemoveAdmin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

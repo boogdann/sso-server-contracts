@@ -8,6 +8,8 @@ service Auth {
   rpc Register(RegisterRequest) returns (RegisterResponse);
   rpc Login(LoginRequest) returns (LoginResponse);
   rpc IsAdmin(IsAdminRequest) returns (IsAdminResponse);
+  rpc SaveAdmin(SaveAdminRequest) returns (SaveAdminResponse);
+  rpc RemoveAdmin(RemoveAdminRequest) returns (RemoveAdminResponse);
 }
 
 message RegisterRequest {
@@ -22,7 +24,7 @@ message RegisterResponse {
 message LoginRequest {
   string email = 1;
   string password = 2;
-  int32 app_id = 3;
+  int32  app_id = 3;
 }
 
 message LoginResponse {
@@ -35,4 +37,22 @@ message IsAdminRequest {
 
 message IsAdminResponse {
   bool is_admin = 1;
+}
+
+message SaveAdminRequest {
+  int64 user_id = 1;
+  int32 app_id = 2;
+}
+
+message SaveAdminResponse {
+  bool ok = 1;
+}
+
+message RemoveAdminResponse {
+  bool ok = 1;
+}
+
+message RemoveAdminRequest {
+  int64 user_id = 1;
+  int32 app_id = 2;
 }
