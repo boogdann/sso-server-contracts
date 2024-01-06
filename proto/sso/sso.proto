@@ -36,6 +36,7 @@ message IsAdminRequest {
   int32 app_id = 2;
 }
 
+
 message IsAdminResponse {
   bool is_admin = 1;
 }
